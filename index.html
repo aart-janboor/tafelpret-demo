@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tafelpret 🐾 — mockup & voorstel</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>" />
+  <style>
+    :root { --pink:#ff8fb8; --pink-light:#ffd7e6; --purple:#b98cff; --text:#5a4a5a; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; color: var(--text);
+      font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(160deg, #fff0f6 0%, #f3f0ff 55%, #eafffb 100%);
+      line-height: 1.6;
+    }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 24px 20px 80px; }
+    header.hero { text-align: center; padding: 40px 0 10px; }
+    .hero h1 { font-size: 2.6rem; margin: 0; color: var(--pink); text-shadow: 2px 2px 0 #fff; }
+    .hero p { font-size: 1.15rem; opacity: 0.85; max-width: 620px; margin: 10px auto 0; }
+    .ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin: 28px 0 10px; }
+    .btn {
+      display: inline-block; font-size: 1.15rem; font-weight: bold; text-decoration: none;
+      padding: 16px 28px; border-radius: 22px; color: #fff; background: var(--pink);
+      box-shadow: 0 5px 0 #d4639a; transition: transform .08s, box-shadow .08s;
+    }
+    .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #d4639a; }
+    .btn.secondary { background: #fff; color: var(--text); box-shadow: 0 5px 0 rgba(0,0,0,.12); }
+    .note {
+      text-align: center; font-size: .92rem; opacity: .7; margin-top: 8px;
+    }
+    .tip {
+      background: #fff; border-radius: 16px; padding: 12px 18px; margin: 24px auto 0;
+      max-width: 620px; box-shadow: 0 3px 0 rgba(0,0,0,.08); font-size: .95rem; text-align: center;
+    }
+    h2.section { text-align: center; font-size: 1.8rem; color: var(--purple); margin: 48px 0 8px; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 16px; }
+    .shot { background: #fff; border-radius: 18px; padding: 10px; box-shadow: 0 6px 18px rgba(150,80,130,.15); text-align: center; }
+    .shot img { width: 100%; border-radius: 10px; display: block; }
+    .shot span { font-weight: bold; font-size: .95rem; display: block; margin-top: 8px; }
+    /* Voorstel (markdown gerenderd) */
+    #proposal {
+      background: #fff; border-radius: 22px; padding: 24px 28px; margin-top: 16px;
+      box-shadow: 0 6px 18px rgba(150,80,130,.12);
+    }
+    #proposal h1 { color: var(--pink); }
+    #proposal h2 { color: var(--purple); border-top: 2px solid var(--pink-light); padding-top: 16px; margin-top: 28px; }
+    #proposal table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    #proposal th, #proposal td { border: 1px solid var(--pink-light); padding: 7px 10px; text-align: left; }
+    #proposal th { background: #fff0f6; }
+    #proposal pre { background: #2d2535; color: #f0e9f5; padding: 14px; border-radius: 12px; overflow-x: auto; }
+    #proposal code { font-family: ui-monospace, Menlo, Consolas, monospace; }
+    #proposal :not(pre) > code { background: #fff0f6; padding: 1px 6px; border-radius: 6px; }
+    #proposal a { color: var(--pink); }
+    footer { text-align: center; margin-top: 50px; opacity: .6; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <h1>Tafelpret 🐾</h1>
+      <p>Leer de tafels van 1 t/m 12 met je eigen schattige huisdier. Verdien munten,
+         voer en verzorg je maatje en koop leuke kleertjes!</p>
+      <div class="ctas">
+        <a class="btn" href="mockups/web-prototype/index.html">▶️ Open de mockup</a>
+        <a class="btn secondary" href="#proposal">📄 Lees het voorstel</a>
+      </div>
+      <div class="tip">💡 Tip: open de mockup op een tablet of telefoon en voeg 'm toe aan je beginscherm. De spelstand wordt op het apparaat bewaard.</div>
+      <p class="note">Dit is een klikbare mockup van een geplande <strong>Flutter tablet-app</strong>.</p>
+    </header>
+
+    <h2 class="section">De schermen</h2>
+    <div class="gallery">
+      <div class="shot"><img src="mockups/screenshots/1-adopt.png" alt="Huisdier kiezen"><span>1. Huisdier kiezen</span></div>
+      <div class="shot"><img src="mockups/screenshots/2-home.png" alt="Home / verzorgen"><span>2. Home / verzorgen</span></div>
+      <div class="shot"><img src="mockups/screenshots/3-practice.png" alt="Tafels kiezen"><span>3. Tafels kiezen</span></div>
+      <div class="shot"><img src="mockups/screenshots/4-quiz.png" alt="Oefenen"><span>4. Oefenen</span></div>
+      <div class="shot"><img src="mockups/screenshots/5-result.png" alt="Resultaat"><span>5. Resultaat</span></div>
+      <div class="shot"><img src="mockups/screenshots/6-shop.png" alt="Winkel"><span>6. Winkel</span></div>
+    </div>
+
+    <h2 class="section" id="proposal-title">Het voorstel</h2>
+    <article id="proposal">Voorstel laden…</article>
+
+    <footer>Gemaakt als voorstel voor een tafels-leerapp • bekijk de <a href="mockups/web-prototype/index.html">klikbare mockup</a></footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    // Render het voorstel (PROPOSAL.md) in de pagina.
+    fetch('PROPOSAL.md')
+      .then(r => r.text())
+      .then(md => {
+        // Verwijder de dubbele H1-titel (staat al als sectiekop) en de interne
+        // repo-verwijzingen die op Pages anders zouden werken.
+        document.getElementById('proposal').innerHTML = marked.parse(md);
+      })
+      .catch(() => {
+        document.getElementById('proposal').innerHTML =
+          '<p>Kon het voorstel niet laden. Bekijk <a href="PROPOSAL.md">PROPOSAL.md</a> direct.</p>';
+      });
+  </script>
+</body>
+</html>
