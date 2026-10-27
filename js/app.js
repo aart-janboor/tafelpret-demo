@@ -99,6 +99,19 @@ function showResult() {
 
 /* ---------- Voortgang ---------- */
 function renderProgress() {
+  // "Hier nog op oefenen": sommen die fout/traag gingen (adaptief).
+  const weak = weakFacts(6);
+  const panel = document.getElementById('weakPanel');
+  const weakList = document.getElementById('weakList');
+  panel.classList.toggle('hidden', weak.length === 0);
+  weakList.innerHTML = '';
+  weak.forEach(label => {
+    const chip = document.createElement('span');
+    chip.className = 'weak-chip';
+    chip.textContent = label;
+    weakList.appendChild(chip);
+  });
+
   const list = document.getElementById('progressList');
   list.innerHTML = '';
   for (let t = 1; t <= 12; t++) {

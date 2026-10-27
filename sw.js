@@ -2,7 +2,7 @@
    Strategie: app-shell precachen; cache-first met netwerk-fallback.
    Bump CACHE bij elke release zodat oude bestanden worden opgeruimd. */
 
-const CACHE = 'tafelpret-v1';
+const CACHE = 'tafelpret-v2';
 
 const ASSETS = [
   './',

@@ -12,24 +12,84 @@ const QuizState = {
   locked: false,   // blokkeert invoer tijdens de feedback-animatie (voorkomt dubbeltellen)
 };
 
-// Bouw een lijst vragen uit de gekozen tafels (a = tafel, b = 1..12).
-function buildQuestions(tables, length) {
-  const all = [];
-  tables.forEach(a => {
-    for (let b = 1; b <= 12; b++) all.push({ a, b, answer: a * b });
-  });
-  shuffle(all);
-  // Herhaal indien er minder unieke sommen zijn dan de gewenste lengte.
-  const out = [];
-  while (out.length < length) out.push(...all);
-  return out.slice(0, length);
+const factKey = (a, b) => `${a}x${b}`;
+
+/* Adaptief oefenen: elke som (a×b) krijgt een gewicht. Fout/traag/nieuw weegt
+   zwaarder (komt vaker terug); goed beheerst weegt lichter. Zo oefent ze vanzelf
+   meer op de sommen die nog niet lekker gaan, zonder dat het een toets wordt. */
+function factWeight(key) {
+  const s = State.factStats[key];
+  if (!s || s.seen === 0) return 2.5;            // nieuwe som → netjes introduceren
+  let w = 1;
+  const acc = s.correct / s.seen;
+  w += (1 - acc) * 4;                            // lage accuraatheid → zwaarder
+  if (s.lastWrong) w += 3;                       // laatste keer fout → snel terug
+  if (s.avgMs && s.avgMs > 4500) w += 1.5;       // traag beantwoord → wat vaker
+  if (s.streak >= 3) w *= 0.4;                   // beheerst → minder vaak
+  if (s.streak >= 6) w *= 0.5;                   // echt beheerst → nog minder
+  return Math.max(0.15, w);                      // nooit helemaal uitsluiten (review)
 }
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+function weightedPick(cands) {
+  const weights = cands.map(q => factWeight(q.key));
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < cands.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return cands[i];
   }
+  return cands[cands.length - 1];
+}
+
+// Bouw een ronde uit de gekozen tafels, gewogen naar wat nog geoefend moet worden.
+function buildQuestions(tables, length) {
+  const pool = [];
+  tables.forEach(a => {
+    for (let b = 1; b <= 12; b++) pool.push({ a, b, answer: a * b, key: factKey(a, b) });
+  });
+  const maxPerFact = Math.max(2, Math.ceil(length / 3)); // variatie bewaken
+  const counts = {};
+  const out = [];
+  let lastKey = null;
+  for (let i = 0; i < length; i++) {
+    let cands = pool.filter(q => (counts[q.key] || 0) < maxPerFact && q.key !== lastKey);
+    if (cands.length === 0) cands = pool.filter(q => q.key !== lastKey);
+    if (cands.length === 0) cands = pool;
+    const q = weightedPick(cands);
+    counts[q.key] = (counts[q.key] || 0) + 1;
+    lastKey = q.key;
+    out.push(q);
+  }
+  return out;
+}
+
+// Sommen die nog aandacht nodig hebben (voor het voortgangsscherm).
+function weakFacts(limit = 6) {
+  return Object.entries(State.factStats)
+    .filter(([, s]) => s.seen > 0 && (s.lastWrong || s.correct / s.seen < 0.8 || (s.avgMs && s.avgMs > 4500)))
+    .map(([key, s]) => ({ key, score: (1 - s.correct / s.seen) + (s.lastWrong ? 1 : 0) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(f => f.key.replace('x', ' × '));
+}
+
+// Werk de per-som-statistiek bij na een antwoord.
+function recordFact(q, correct, ms) {
+  const k = q.key || factKey(q.a, q.b);
+  const s = State.factStats[k] ||
+    (State.factStats[k] = { seen: 0, correct: 0, wrong: 0, streak: 0, avgMs: null, lastWrong: false });
+  s.seen++;
+  if (correct) {
+    s.correct++;
+    s.streak++;
+    s.lastWrong = false;
+    s.avgMs = s.avgMs == null ? ms : Math.round(s.avgMs * 0.7 + ms * 0.3); // voortschrijdend gemiddelde
+  } else {
+    s.wrong++;
+    s.streak = 0;
+    s.lastWrong = true;
+  }
+  saveState();
 }
 
 function startQuiz(tables, length) {
@@ -57,6 +117,7 @@ function renderQuestion() {
   document.getElementById('streakCount').textContent = QuizState.streak;
   const pct = (QuizState.index / QuizState.length) * 100;
   document.getElementById('quizProgress').style.width = pct + '%';
+  QuizState.shownAt = Date.now();   // voor het meten van "trage" sommen
 }
 
 function updateAnswerDisplay() {
@@ -93,6 +154,7 @@ function submitAnswer() {
     const bonus = QuizState.streak >= 3 ? 2 : 1;       // streak-bonus
     QuizState.coinsEarned += bonus;
     recordMastery(q.a);
+    recordFact(q, true, Date.now() - QuizState.shownAt);
     ans.classList.add('correct');
     fb.textContent = QuizState.streak >= 3 ? `Super! 🔥 +${bonus} 🪙` : `Goed zo! +${bonus} 🪙`;
     fb.className = 'feedback good';
@@ -102,6 +164,7 @@ function submitAnswer() {
     setTimeout(nextQuestion, 850);
   } else {
     QuizState.streak = 0;
+    recordFact(q, false, 0);
     ans.classList.add('shake');
     fb.textContent = `Bijna! ${q.a} × ${q.b} = ${q.answer}`;
     fb.className = 'feedback bad';

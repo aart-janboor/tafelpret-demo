@@ -322,6 +322,18 @@ body {
 .progress-row .pname { font-weight: bold; }
 .progress-row .pstars { font-size: 1.3rem; letter-spacing: 2px; }
 
+/* "Hier nog op oefenen" — zwakke sommen (adaptief) */
+.weak-panel {
+  width: 100%; max-width: 420px; background: #fff; border-radius: 18px;
+  padding: 12px 16px 16px; box-shadow: 0 3px 0 rgba(0,0,0,.08); text-align: center;
+}
+.weak-panel .title-sm { margin: 2px 0 10px; }
+.weak-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.weak-chip {
+  background: var(--pink-light); color: var(--text); font-weight: bold;
+  padding: 7px 14px; border-radius: 14px; font-size: 1.05rem;
+}
+
 /* ===== Confetti ===== */
 .confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
 

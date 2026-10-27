@@ -18,7 +18,8 @@ const DEFAULT_STATE = {
   lastSeen: Date.now(),
   owned: {},          // { itemId: true }
   worn: { hat: null, neck: null, item: null },
-  mastery: {},        // { tafel(1..12): aantalGoed }
+  mastery: {},        // { tafel(1..12): aantalGoed } — voor de sterren
+  factStats: {},      // { "axb": { seen, correct, wrong, streak, avgMs, lastWrong } } — voor adaptief oefenen
 };
 
 // Eén gedeelde, muteerbare spelstand. We muteren 'm in-place (nooit herbinden),
