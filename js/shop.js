@@ -63,12 +63,15 @@ function handleShopClick(item) {
   if (item.cat === 'wear') {
     if (State.worn[item.slot] === item.id) {          // al aan -> uitdoen
       State.worn[item.slot] = null;
+      Sound.tap();
     } else if (State.owned[item.id]) {                // bezit -> aandoen
       State.worn[item.slot] = item.id;
+      Sound.tap();
     } else if (State.coins >= item.price) {           // kopen + aandoen
       State.coins -= item.price;
       State.owned[item.id] = true;
       State.worn[item.slot] = item.id;
+      Sound.coin();
     }
     saveState(State);
     renderShop();
@@ -82,6 +85,7 @@ function handleShopClick(item) {
   if (item.food) feedPet(item.food);
   if (item.happy) playWithPet(item.happy);
   saveState(State);
+  Sound.feed();
   bounceShopPet(item);
   renderShop();
   document.getElementById('coinCount').textContent = State.coins;

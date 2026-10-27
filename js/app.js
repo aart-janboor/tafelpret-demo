@@ -94,7 +94,7 @@ function showResult() {
   document.getElementById('resultPet').textContent = ratio >= 0.7 ? '🎉' : (State.pet ? State.pet.face : '🐱');
   document.getElementById('resultTitle').textContent =
     ratio === 1 ? 'Helemaal goed! 🏆' : ratio >= 0.7 ? 'Goed gedaan! 💖' : 'Lekker geoefend! 👍';
-  if (ratio >= 0.7) bigConfetti();
+  if (ratio >= 0.7) { bigConfetti(); Sound.fanfare(); } else { Sound.stars(); }
 }
 
 /* ---------- Voortgang ---------- */
@@ -174,6 +174,7 @@ function init() {
   document.getElementById('petDisplay').onclick = () => {
     bouncePet();
     playWithPet(2);
+    Sound.purr();
     document.getElementById('barHappy').style.width = State.happy + '%';
     document.getElementById('petSpeech').textContent = petSpeak();
   };
@@ -210,8 +211,62 @@ function init() {
     else if (e.key === 'Enter') pressKey('ok');
   });
 
+  // Geluid aan/uit
+  const soundBtn = document.getElementById('soundBtn');
+  const refreshSoundBtn = () => { soundBtn.textContent = State.soundOn === false ? '🔇' : '🔊'; };
+  refreshSoundBtn();
+  soundBtn.onclick = () => {
+    State.soundOn = State.soundOn === false;   // toggle (default aan)
+    saveState();
+    refreshSoundBtn();
+    if (State.soundOn) Sound.tap();
+  };
+
+  // Back-up en herstel (voor de ouder)
+  document.getElementById('backupBtn').onclick = () => exportSave();
+  const restoreInput = document.getElementById('restoreInput');
+  document.getElementById('restoreBtn').onclick = () => restoreInput.click();
+  restoreInput.onchange = () => {
+    if (!restoreInput.files[0]) return;
+    importSave(restoreInput.files[0], ok => {
+      restoreInput.value = '';
+      if (ok) { renderPet(); show(State.pet ? 'home' : 'adopt'); }
+      else alert('Kon dit back-upbestand niet lezen.');
+    });
+  };
+
+  // Audio ontgrendelen bij de eerste aanraking (browser-vereiste).
+  const unlock = () => { Sound.unlock(); removeEventListener('pointerdown', unlock); };
+  addEventListener('pointerdown', unlock, { once: true });
+
   // Startscherm bepalen
   show(State.pet ? 'home' : 'adopt');
 }
 
-init();
+// Installeren op de tablet: vang de prompt en toon een eigen knop.
+let deferredInstall = null;
+addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  const btn = document.getElementById('installBtn');
+  if (btn) {
+    btn.classList.remove('hidden');
+    btn.onclick = async () => {
+      btn.classList.add('hidden');
+      deferredInstall.prompt();
+      await deferredInstall.userChoice;
+      deferredInstall = null;
+    };
+  }
+});
+addEventListener('appinstalled', () => {
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.classList.add('hidden');
+});
+
+// Opstarten: eerst de spelstand laden, dan persistente opslag vragen, dan de app.
+(async () => {
+  await loadStateAsync();
+  await requestPersistentStorage();
+  init();
+})();

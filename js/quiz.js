@@ -75,6 +75,7 @@ function pressKey(key) {
   } else if (QuizState.input.length < 3) {
     QuizState.input += key;
     updateAnswerDisplay();
+    Sound.tap();
   }
 }
 
@@ -97,12 +98,14 @@ function submitAnswer() {
     fb.className = 'feedback good';
     document.getElementById('miniPet').classList.add('happy');
     tinyConfetti();
+    Sound.correct();
     setTimeout(nextQuestion, 850);
   } else {
     QuizState.streak = 0;
     ans.classList.add('shake');
     fb.textContent = `Bijna! ${q.a} × ${q.b} = ${q.answer}`;
     fb.className = 'feedback bad';
+    Sound.wrong();
     setTimeout(() => {
       QuizState.input = '';
       updateAnswerDisplay();

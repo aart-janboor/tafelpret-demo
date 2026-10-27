@@ -63,6 +63,22 @@ body {
   box-shadow: 0 3px 0 #e0a800;
 }
 .coin-icon { font-size: 1.2rem; }
+.top-right { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+  font-size: 1.3rem; line-height: 1; background: #fff; border: none; cursor: pointer;
+  width: 42px; height: 42px; border-radius: 50%; box-shadow: 0 3px 0 rgba(0,0,0,.12);
+}
+.icon-btn:active { transform: translateY(3px); box-shadow: 0 0 0 rgba(0,0,0,.12); }
+
+/* Voettekst op home: install + back-up (ouder) */
+.home-footer { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
+.text-btn {
+  font-family: inherit; font-size: .9rem; font-weight: bold; color: var(--text);
+  background: rgba(255,255,255,.6); border: none; border-radius: 14px; padding: 8px 14px;
+  cursor: pointer; opacity: .85;
+}
+.text-btn:active { transform: translateY(2px); }
+#installBtn { background: var(--mint); color: #fff; opacity: 1; box-shadow: 0 3px 0 #4bbfa8; }
 
 /* ===== Schermen ===== */
 #app { width: 100%; flex: 1; padding: 16px; }
@@ -308,3 +324,57 @@ body {
 
 /* ===== Confetti ===== */
 .confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+
+/* ===== Tablet landscape (bv. 11") =====
+   Op een breed, liggend scherm gebruiken we twee kolommen i.p.v. één smalle strook,
+   zodat de ruimte benut wordt en alles zonder scrollen past (landscape is laag). */
+@media (orientation: landscape) and (min-width: 760px) {
+  body { max-width: 1040px; }
+
+  /* Home: huisdier links, bediening rechts */
+  #screen-home {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-areas:
+      "pet stats"
+      "pet buttons"
+      "pet footer";
+    align-content: center;
+    align-items: center;
+    column-gap: 30px;
+    row-gap: 14px;
+    min-height: calc(100vh - 70px);
+  }
+  #screen-home .pet-stage   { grid-area: pet; align-self: center; }
+  #screen-home .stats       { grid-area: stats; max-width: none; }
+  #screen-home .home-buttons{ grid-area: buttons; max-width: none; }
+  #screen-home .home-footer { grid-area: footer; }
+  #screen-home .pet-face    { font-size: 9rem; }
+
+  /* Quiz: vraag + huisdier links, cijferpad rechts (past in de lage hoogte) */
+  #screen-quiz {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    grid-template-areas:
+      "top  top"
+      "pet  pad"
+      "card pad"
+      "fb   pad";
+    align-content: center;
+    justify-items: center;
+    column-gap: 40px;
+    row-gap: 8px;
+    min-height: calc(100vh - 40px);
+  }
+  #screen-quiz .quiz-top     { grid-area: top; width: 100%; max-width: none; }
+  #screen-quiz .mini-pet     { grid-area: pet; }
+  #screen-quiz .question-card{ grid-area: card; width: 100%; }
+  #screen-quiz .feedback     { grid-area: fb; }
+  #screen-quiz .numpad       { grid-area: pad; align-self: center; max-width: 340px; }
+
+  /* Keuze-/winkelschermen: meer breedte benutten */
+  #screen-practice .table-grid { max-width: 560px; }
+  .shop-items { grid-template-columns: repeat(3, 1fr); max-width: 680px; }
+  .progress-list { max-width: 560px; }
+  .pet-choices { max-width: 760px; }
+}
